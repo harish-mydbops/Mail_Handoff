@@ -95,6 +95,6 @@ if [[ $issues -ne 0 ]]; then
 	Issues
 fi
 
-echo "<body><br>with regards,<br>OPS Team<br>Mydbops.</body>" >> mail.html
+echo "</table><body><br>with regards,<br>OPS Team<br>Mydbops.</body>" >> mail.html
 sed -i "1 i\Subject:Handoff to ${Shift} Shift ${day}\nContent-Type:text/html; charset="us-ascii"" mail.html
-sendmail -f ops-group@mydbops.com -t dba-group@mydbops.com < mail.html
+sendmail -f dba-group@mydbops.com -t dba-group@mydbops.com < mail.html
