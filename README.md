@@ -7,7 +7,7 @@ Hi Team,
 
 ```From - Your_Name
 
-Handoff to Night Shift
+Handoff to {Next} Shift
 
 Completed Tasks:
 ===============
@@ -33,4 +33,9 @@ Issues:
 ======
 
 Client Name :: Ticket.No(if any) description :: Comments(if any)
+
+Information:
+===========
+
+Type the information here
 ```
