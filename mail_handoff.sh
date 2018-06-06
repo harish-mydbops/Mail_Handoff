@@ -11,7 +11,7 @@ info=`cat handoff | awk '/Information/,0' | awk NF | tail -n+3 | wc -l`
 user=`whoami`
 sender=`echo ${user^}`
 
-if [[ $Time -gt 00 && $Time -le 9 ]]; then
+if [[ $Time -gt 1 && $Time -le 9 ]]; then
 	Shift='Morning'
 elif [[ $Time -gt 9 && $Time -le 18 ]]; then
 	Shift='Afternoon'
@@ -19,10 +19,19 @@ elif [[ $Time -gt 18 ]]; then
 	Shift='Night'
 fi
 
-echo "<table border='1' width='70%' table-layout='fixed' cellpadding='5' cellspacing='0' height='30'>
+echo "<html><table border='1' width='70%' table-layout='fixed' cellpadding='5' cellspacing='0' height='30'>
 <caption>From: $sender</caption>
 <TR bgcolor='#ff9900'><TH align='center' colspan='4'>Handoff to $Shift Shift</TH></TR>
 <TR bgcolor='#33bbff'><TH width='3%'table-layout='fixed'>S.No</TH><TH width='15%'>Client Name</TH><TH width='37%'>Short Description</TH><TH width='15%'>Comments</TH></TR>" > $mailfile
+
+ticketlink(){
+	tckts=( $(cat handoff | egrep -o "#......" | sed 's/#//g') )
+	arr_len=${#tckts[@]}
+	for (( i = 0 ; i < $arr_len; i++ )); do
+		tckt_id=`expr ${tckts[$i]} - 16`
+		sed -i "s/#${tckts[$i]}/<a href=\"https:\/\/tickets.mydbops.com\/scp\/tickets.php?id=$tckt_id\">#${tckts[$i]}<\/a>/g" handoff
+	done
+}
 
 Completed(){
   echo "<TR><TH bgcolor='#ffff99' align='center' colspan='4'>Completed Tasks</TH></TR>" >> $mailfile
@@ -86,6 +95,8 @@ Information(){
   done
 }
 
+ticketlink
+
 if [[ $complete_tasks -ne 0 ]]; then
 	Completed
 fi
@@ -110,7 +121,7 @@ if [[ $info -ne 0 ]]; then
   Information
 fi
 
-echo "</table><body><br>with regards,<br>OPS Team<br>Mydbops.</body>" >> $mailfile
+echo "</table><body><br>with regards,<br>OPS Team<br>Mydbops.</body></html>" >> $mailfile
 sed -i "1 i\Subject:Handoff to ${Shift} Shift ${day}\nContent-Type:text/html; charset="us-ascii"" $mailfile
 sendmail -f dba-group@mydbops.com -t dba-group@mydbops.com < $mailfile
 #sendmail -f harish@mydbops.com -t harishkumar@mydbops.com < $mailfile
